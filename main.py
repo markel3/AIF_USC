@@ -1,4 +1,3 @@
-from map_generator import generate_random_map
 import os
 import argparse
 import numpy as np
