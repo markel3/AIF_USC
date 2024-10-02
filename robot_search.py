@@ -4,6 +4,7 @@ from collections import deque
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+import networkx as nx
 
 orientation_vectors = {
     0: (-1, 0),     # North
@@ -79,7 +80,21 @@ class Map:
         plt.axis('off')
         plt.show()
         
-    
+def visualize_tree(parent_map, title, figsize=(18, 14)):
+    G = nx.DiGraph()
+
+    for child, parent in parent_map.items():
+        G.add_edge(parent, child)
+
+    pos = nx.drawing.nx_agraph.graphviz_layout(G, prog='dot')
+
+    plt.figure(figsize=figsize)
+
+    nx.draw(G, pos, with_labels=True, node_size=3000, node_color='lightblue', font_size=10, font_weight='bold', arrowsize=20)
+    plt.title(title, fontsize=40)
+    plt.show()
+
+
 class RobotProblem(Problem):
 
     def __init__(self, map):
@@ -115,27 +130,31 @@ def breadth_first_graph_search(problem):
         return node
     frontier = deque([node])
     explored = []
+    parent_map = {}
     while frontier:
         node = frontier.popleft()
         explored.append(node.state)
         for child in node.expand(problem):
             if child.state not in explored and child not in frontier:
+                parent_map[child.state] = node.state
                 if problem.goal_test(child.state):
-                    return child, explored, frontier
+                    return child, explored, frontier, parent_map
                 frontier.append(child)
     return None
 
 def depth_first_graph_search(problem):
     frontier = [(Node(problem.initial))]
-
     explored = []
+    parent_map = {}
     while frontier:
         node = frontier.pop()
         if problem.goal_test(node.state):
-            return node, explored, frontier
+            return node, explored, frontier, parent_map
         explored.append(node.state)
-        frontier.extend(child for child in node.expand(problem)
-                        if child.state not in explored and child not in frontier)
+        for child in node.expand(problem):
+            if child.state not in explored and child not in frontier:
+                parent_map[child.state] = node.state
+                frontier.append(child)
     return None
 
 def best_first_graph_search(problem, f, display=False):
@@ -144,15 +163,17 @@ def best_first_graph_search(problem, f, display=False):
     frontier = PriorityQueue('min', f)
     frontier.append(node)
     explored = []
+    parent_map = {}
     while frontier:
         node = frontier.pop()
         if problem.goal_test(node.state):
             if display:
                 print(len(explored), "paths have been expanded and", len(frontier), "paths remain in the frontier")
-            return node, explored, frontier
+            return node, explored, frontier, parent_map
         explored.append(node.state)
         for child in node.expand(problem):
             if child.state not in explored and child not in frontier:
+                parent_map[child.state] = node.state
                 frontier.append(child)
             elif child in frontier:
                 if f(child) < frontier[child]:
