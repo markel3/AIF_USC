@@ -1,3 +1,7 @@
+# This script is taken from the following repository:
+# Source: https://github.com/aimacode/aima-python
+# License: MIT
+
 """
 Search (Chapters 3-4)
 
