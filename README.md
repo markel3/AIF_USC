@@ -20,6 +20,11 @@
     </li>
     <li>
         <a href="#usage">Usage</a>
+        <ul>
+          <li>  <a href="#1.-generate-maps">Generate maps</a> </li>
+          <li>  <a href="#2.-execute-several-searchs">Execute several searchs</a> </li>
+          <li>  <a href="#3.-execute-one-search">Execute one search</a> </li>
+        </ul>        
     </li>
   </ol>
 </details>
@@ -46,11 +51,26 @@ To get a local copy up and running follow these simple example steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+<p>To run the program, execute the <code>main.py</code> script. It offers three execution options:</p>
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+### 1. Generate Maps
+This function allows you to create random maps for the robot search problem. To use it, type `-g` followed by two arguments:
+<ul>
+  <li><b>Map size:</b> Either a single positive integer for a square map or two positive integers separated by 'x' (e.g., <code>5x7</code>).</li>
+  <li><b>Number of maps:</b> A positive integer indicating how many maps to generate.</li>
+</ul>
+
+#### Examples:
+<ul>
+  <li><code>python main.py -g 10 5</code> — Generates 5 square maps of size 10x10.</li>
+  <li><code>python main.py -g 5x7 3</code> — Generates 3 rectangular maps of size 5x7.</li>
+</ul>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+### 2. Execute several searchs
+
+### 3. Execute one search
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
