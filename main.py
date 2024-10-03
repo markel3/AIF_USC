@@ -126,7 +126,7 @@ def output_trace(folder_path, map_file, final_node, explored, frontier):
                 heuristic = node.h
                 f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
             else:
-                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, S)\n")
+                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {state})\n")
 
             if i < len(solution) - 1:
                 f.write(f"Operator {i}: {operator}\n")

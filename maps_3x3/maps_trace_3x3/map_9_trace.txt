@@ -1,8 +1,8 @@
 Node 0 (starting node)
-Node 0: (0, 0, N/A, S)
+Node 0: (0, 0, N/A, (0, 0, 3))
 Operator 0: N/A
-Node 1: (1, 9, (1, 1, 3), S)
-Operator 1: (1, 1, 3)
-Node 2: (2, 15, (2, 2, 3), S)
+Node 1: (1, 9, N/A, (1, 1, 3))
+Operator 1: N/A
+Node 2: (2, 15, N/A, (2, 2, 3))
 Total number of items in explored list: 4
 Total number of items in frontier: 6

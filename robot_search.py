@@ -103,16 +103,16 @@ class RobotProblem(Problem):
         self.dimensions = map.weights.shape
 
     def actions(self, state):
-        actions = []
-        actions.append((state[0], state[1], (state[2] - 1) % 8))
-        actions.append((state[0], state[1], (state[2] + 1) % 8))
+        actions = [-1,1]
         new_position = [state[0] + orientation_vectors[state[2]][0], state[1] + orientation_vectors[state[2]][1]]
         if 0 <= new_position[0] < self.dimensions[0] and 0 <= new_position[1] < self.dimensions[1]:
-            actions.append((new_position[0], new_position[1], state[2]))
+            actions.append(0)
         return actions
     
     def result(self, state, action):
-        return action
+        if action != 0:
+            return (state[0], state[1], (state[2] + action) % 8)
+        return (state[0] + orientation_vectors[state[2]][0], state[1] + orientation_vectors[state[2]][1], state[2])
     
     def goal_test(self, state):
         return state[:2] == self.goal[:2]
