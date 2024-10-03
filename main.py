@@ -65,6 +65,7 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
     
     # Ensure trace folder exists
     os.makedirs(trace_folder_path, exist_ok=True)
+    os.makedirs(vis_folder_path, exist_ok=True)
 
     # List maps from the maps folder
     try:
@@ -115,7 +116,7 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
         # Save detailed trace to a .txt file for each map
         output_trace(trace_folder_path, map_file, final_node, explored, frontier)
 
-        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", folder_path = vis_folder_path)
+        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", folder_path = os.path.join(vis_folder_path, map_file.split('.')[0]))
     
     return results
 
