@@ -2,12 +2,18 @@ import os
 import argparse
 import numpy as np
 
-def generate_random_map(map_size, filename, origin_dir = os.getcwd()):
+def generate_random_map(map_size, filename, origin_dir = os.getcwd(), random_start_end_points = False):
     path = os.path.join(origin_dir, filename)
     weights = np.random.randint(1, 10, size=map_size)
-    start_point = np.random.randint(0, [map_size[0], map_size[1], 9], size=3)
-    end_point = np.random.randint(0, [map_size[0], map_size[1]], size=2)
-    end_point = np.append(end_point, 8)
+    if random_start_end_points:
+        start_point = np.random.randint(0, [map_size[0], map_size[1], 9], size=3)
+        end_point = np.random.randint(0, [map_size[0], map_size[1]], size=2)
+        while start_point[0] == end_point[0] and start_point[1] == end_point[1]:
+            end_point = np.random.randint(0, [map_size[0], map_size[1]], size=2)
+        end_point = np.append(end_point, 8)
+    else:
+        start_point = [0, 0, np.random.randint(1, 8)]
+        end_point = [map_size[0] - 1, map_size[1] - 1, 8]
     
     with open(path, 'w') as f:
         f.write(f"{map_size[0]} {map_size[1]}\n")
@@ -19,9 +25,15 @@ def generate_random_map(map_size, filename, origin_dir = os.getcwd()):
 def parse_size(size_arg):
     sizes = list(map(int, size_arg.split('x')))
     if len(sizes) == 1:
-        return [sizes[0], sizes[0]]  # (n, n) for square map
+        if sizes[0] > 1:
+            return [sizes[0], sizes[0]]  # (n, n) for square map
+        else:
+            raise ValueError("Size must be greater than 1.")
     elif len(sizes) == 2:
-        return [sizes[0], sizes[1]]  # (n, m) for rectangular map
+        if sizes[0] > 1 or sizes[1] > 1:
+            return [sizes[0], sizes[1]]  # (n, m) for rectangular map
+        else:
+            raise ValueError("Size must be greater than 1.")
     else:
         raise ValueError("Size must be an integer or two integers separated by 'x'.")
 
