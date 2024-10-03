@@ -110,7 +110,7 @@ def execute_algorithm(map_size, algorithm):
 
 def output_trace(folder_path, map_file, final_node, explored, frontier):
     file_path = os.path.join(folder_path, f"{map_file.split('.')[0]}_trace.txt")
-    solution = final_node.solution()
+    solution = final_node.path()
     
     with open(file_path, "w") as f:
         f.write("Node 0 (starting node)\n")
