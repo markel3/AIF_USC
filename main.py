@@ -1,7 +1,7 @@
 import os
 import argparse
 import numpy as np
-from robot_search import breadth_first_graph_search, depth_first_graph_search, astar_search, Map, RobotProblem, Node
+from robot_search import *
 import re
 
 def generate_random_map(map_size, filename, origin_dir = os.getcwd(), random_start_end_points = False):
@@ -54,10 +54,14 @@ def parse_size(size_arg):
     else:
         raise ValueError("Size must be an integer or two integers separated by 'x'.")
 
-def execute_algorithm(map_size, algorithm):
+def execute_algorithm(map_size, algorithm, heuristic = None):
     # Directories for maps and traces
     maps_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_info_{map_size[0]}x{map_size[1]}"
-    trace_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_trace_{map_size[0]}x{map_size[1]}"
+    if heuristic:
+        trace_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_trace_{map_size[0]}x{map_size[1]}/a_{heuristic}"
+    else:
+        trace_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_trace_{map_size[0]}x{map_size[1]}/{algorithm}"
+    vis_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_vis_{map_size[0]}x{map_size[1]}"
     
     # Ensure trace folder exists
     os.makedirs(trace_folder_path, exist_ok=True)
@@ -74,7 +78,12 @@ def execute_algorithm(map_size, algorithm):
     for map_file in maps:
         print(f"Processing map: {map_file}")
         map_data = Map(os.path.join(maps_folder_path, map_file))
-        robot_problem = RobotProblem(map_data)
+        if heuristic == 'h1':
+            robot_problem = RobotProblem_Chebyshev(map_data)
+        elif heuristic == 'h2':
+            robot_problem = RobotProblem_Euclidean(map_data)
+        else:
+            robot_problem = RobotProblem(map_data)
         
         # Run the chosen algorithm
         result = None
@@ -105,21 +114,38 @@ def execute_algorithm(map_size, algorithm):
         
         # Save detailed trace to a .txt file for each map
         output_trace(trace_folder_path, map_file, final_node, explored, frontier)
+
+        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", folder_path = vis_folder_path)
     
     return results
+
+def print_node(node):
+    # Get details of the current node
+    depth = node.depth  # Ensure node is a Node object
+    path_cost = node.path_cost
+    operator = node.action if node.action is not None else 'N/A'
+    state = node.state
+    
+    return depth, path_cost, operator, state
 
 def output_trace(folder_path, map_file, final_node, explored, frontier):
     file_path = os.path.join(folder_path, f"{map_file.split('.')[0]}_trace.txt")
     solution = final_node.path()
     
     with open(file_path, "w") as f:
-        f.write("Node 0 (starting node)\n")
-        for i, node in enumerate(solution):
+        depth, path_cost, operator, state = print_node(solution[0])
+
+        if hasattr(solution[0], 'h'):
+            heuristic = solution[0].h
+            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
+        else:
+            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {state})\n")
+
+        for i, node in enumerate(solution[1:], start=1):
             # Get details of the current node
-            depth = node.depth  # Ensure node is a Node object
-            path_cost = node.path_cost
-            operator = node.action if node.action else 'N/A'
-            state = node.state
+            depth, path_cost, operator, state = print_node(node)
+
+            f.write(f"Operator {i}: {operator}\n")
             
             # Output format based on the presence of heuristic
             if hasattr(node, 'h'):
@@ -127,9 +153,6 @@ def output_trace(folder_path, map_file, final_node, explored, frontier):
                 f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
             else:
                 f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {state})\n")
-
-            if i < len(solution) - 1:
-                f.write(f"Operator {i}: {operator}\n")
 
         f.write(f"Total number of items in explored list: {len(explored)}\n")
         f.write(f"Total number of items in frontier: {len(frontier)}\n")
@@ -197,8 +220,12 @@ if __name__ == '__main__':
             if algorithm not in ['breadth', 'depth', 'a*']:
                 raise ValueError("Invalid algorithm choice. Please select from breadth, depth, or a*.")
             
-            results = execute_algorithm(map_size, algorithm)
-
+            if algorithm == 'a*':
+                heuristic = input("Choose the heuristic function (h1(Chebyshev), h2(Euclidean)): ").lower()
+                results = execute_algorithm(map_size, algorithm, heuristic)
+            else:
+                results = execute_algorithm(map_size, algorithm)
+            
             # Output statistics for all maps
             for map_file, depth, cost, explored_count, frontier_count in results:
                 print(f"Map: {map_file} | Depth: {depth} | Cost: {cost} | Explored nodes: {explored_count} | Final frontier: {frontier_count}")
