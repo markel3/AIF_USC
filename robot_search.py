@@ -80,7 +80,7 @@ class Map:
         plt.axis('off')
         plt.show()
         
-def visualize_tree(parent_map, title, figsize=(18, 14)):
+def visualize_tree(parent_map, title, figsize=(18, 14), folder_path = None):
     G = nx.DiGraph()
 
     for child, parent in parent_map.items():
@@ -92,7 +92,11 @@ def visualize_tree(parent_map, title, figsize=(18, 14)):
 
     nx.draw(G, pos, with_labels=True, node_size=3000, node_color='lightblue', font_size=10, font_weight='bold', arrowsize=20)
     plt.title(title, fontsize=40)
-    plt.show()
+
+    if folder_path:
+        plt.savefig(folder_path)
+    else:
+        plt.show()
 
 
 class RobotProblem(Problem):
