@@ -21,9 +21,9 @@
     <li>
         <a href="#usage">Usage</a>
         <ul>
-          <li>  <a href="#1.-generate-maps">Generate maps</a> </li>
-          <li>  <a href="#2.-execute-several-searchs">Execute several searchs</a> </li>
-          <li>  <a href="#3.-execute-one-search">Execute one search</a> </li>
+          <li>  <a href="#generate-maps">Generate maps</a> </li>
+          <li>  <a href="#execute-several-searchs">Execute several searchs</a> </li>
+          <li>  <a href="#execute-one-search">Execute one search</a> </li>
         </ul>        
     </li>
   </ol>
@@ -53,7 +53,8 @@ To get a local copy up and running follow these simple example steps.
 
 <p>To run the program, execute the <code>main.py</code> script. It offers three execution options:</p>
 
-### 1. Generate Maps
+<h3 id="generate-maps"> 1. Generate Maps </h3>
+
 This function allows you to create random maps for the robot search problem. To use it, type `-g` followed by two arguments:
 <ul>
   <li><b>Map size:</b> Either a single positive integer for a square map or two positive integers separated by 'x' (e.g., <code>5x7</code>).</li>
@@ -68,9 +69,13 @@ This function allows you to create random maps for the robot search problem. To 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### 2. Execute several searchs
+<h3 id="execute-several-searchs"> 2. Execute several searchs </h3>
 
-### 3. Execute one search
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<h3 id="execute-one-search"> 3. Execute one search </h3>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
