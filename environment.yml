@@ -1,0 +1,11 @@
+name: aif_p1
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - ipykernel
+  - numpy
+  - matplotlib
+  - networkx
+  - pygraphviz
+  - pip
