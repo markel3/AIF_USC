@@ -91,7 +91,7 @@ This function allows you to create random maps for the robot search problem. To 
   <li><b>Final Number of Nodes in the Frontier:</b> The number of nodes stored in the frontier list at the end of execution.</li>
 </ul>
 
-<p>Finally, it also computes the averages of all metrics across the processed maps.</p>
+<p>Finally, it computes the averages of all metrics across the processed maps and stores the results of each map separately, along with the averages in a single output file.</p>
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

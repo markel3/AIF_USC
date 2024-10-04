@@ -191,6 +191,8 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
         avg_output = avg_template.format(algorithm, avg_depth, avg_cost, avg_explored, avg_frontier)
         print(avg_output)
         f.write(avg_output)
+        
+    print(f"Metrics saved to {exec_folder_path}/metrics.txt")
             
     return results
 
