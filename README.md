@@ -69,7 +69,30 @@ This function allows you to create random maps for the robot search problem. To 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<h3 id="execute-several-searchs"> 2. Execute several searchs </h3>
+<h3 id="execute-several-searchs"> 2. Execute Multiple Searches </h3>
+
+<p>This function allows you to execute your preferred search algorithm for all maps of a specified size. To use it, type <code>-s</code> followed by one argument:</p>
+<ul>
+  <li><b>Map Size:</b> This can be a single positive integer for a square map or two positive integers separated by an 'x' (e.g., <code>5x7</code>).</li>
+</ul>
+<p>You will then be prompted to select one of the available search algorithms.</p>
+
+<h4>Examples:</h4>
+<ul>
+  <li><code>python main.py -s 5</code> — Executes the search for all square maps of size 5x5.</li>
+  <li><code>python main.py -s 5x7</code> — Executes the search for all rectangular maps of size 5x7.</li>
+</ul>
+
+<p>The program will generate files that include the output trace, search tree visualization, and solution visualization for each map. Additionally, it computes the following metrics for each map:</p>
+<ul>
+  <li><b>Depth:</b> The depth of the exploration tree where the solution was found.</li>
+  <li><b>Cost:</b> The cost of the obtained solution path.</li>
+  <li><b>Total Number of Explored Nodes:</b> The total number of nodes (expanded) during the execution of the corresponding algorithm.</li>
+  <li><b>Final Number of Nodes in the Frontier:</b> The number of nodes stored in the frontier list at the end of execution.</li>
+</ul>
+
+<p>Finally, it also computes the averages of all metrics across the processed maps.</p>
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

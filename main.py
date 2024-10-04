@@ -55,6 +55,53 @@ def parse_size(size_arg):
     else:
         raise ValueError("Size must be an integer or two integers separated by 'x'.")
 
+def calculate_averages(results):
+    if not results:
+        return 0, 0, 0, 0
+    
+    total_depth = total_cost = total_explored = total_frontier = 0
+    for _, depth, cost, explored_count, frontier_count in results:
+        total_depth += depth
+        total_cost += cost
+        total_explored += explored_count
+        total_frontier += frontier_count
+    
+    count = len(results)
+    avg_depth = total_depth / count
+    avg_cost = total_cost / count
+    avg_explored = total_explored / count
+    avg_frontier = total_frontier / count
+    
+    return avg_depth, avg_cost, avg_explored, avg_frontier
+
+def output_trace(final_node, explored, frontier, path):
+    solution = final_node.path()
+    
+    with open(path, "w") as f:
+        depth, path_cost, operator, state = print_node(solution[0])
+
+        if hasattr(solution[0], 'h'):
+            heuristic = solution[0].h
+            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
+        else:
+            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {state})\n")
+
+        for i, node in enumerate(solution[1:], start=1):
+            # Get details of the current node
+            depth, path_cost, operator, state = print_node(node)
+
+            f.write(f"Operator {i}: {operator}\n")
+            
+            # Output format based on the presence of heuristic
+            if hasattr(node, 'h'):
+                heuristic = node.h
+                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
+            else:
+                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {state})\n")
+
+        f.write(f"Total number of items in explored list: {len(explored)}\n")
+        f.write(f"Total number of items in frontier: {len(frontier)}\n")
+
 def execute_algorithm(map_size, algorithm, heuristic = None):
     # Directories for maps and execution results
     maps_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_info_{map_size[0]}x{map_size[1]}"
@@ -76,6 +123,10 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
     results = []
     
     for map_file in maps:
+        trace_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_trace.txt")
+        tree_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_tree.png")
+        solution_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_solution.png")
+        
         print(f"Processing map: {map_file}")
         map_data = Map(os.path.join(maps_folder_path, map_file))
         if heuristic == 'h1':
@@ -113,10 +164,34 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
         results.append((map_file, depth, cost, len(explored), len(frontier)))
         
         # Save detailed trace to a .txt file for each map
-        output_trace(exec_folder_path, map_file, final_node, explored, frontier)
+        output_trace(final_node, explored, frontier, trace_file)
+        print(f"Trace saved to {trace_file}")
 
-        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", folder_path = os.path.join(exec_folder_path, map_file.split('.')[0]))
+        # Save the tree visualization for each map
+        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", path = tree_file)
+        print(f"Tree visualization saved to {tree_file}")
+        
+        # Save the visualization of the solution path
+        solution = final_node.solution()
+        solution.insert(0, map_data.start_position)
+        map_data.draw_solution(solution, path = solution_file)
+        print(f"Solution visualization saved to {solution_file}\n")
     
+    # Output statistics for all maps and write to file
+    output_template = "Map: {0} | Depth: {1} | Cost: {2} | Explored nodes: {3} | Final frontier: {4}\n"
+    avg_template = "\nAverages for all maps using {0} search: | Depth: {1:.2f} | Cost: {2:.2f} | Explored nodes: {3:.2f} | Final frontier: {4:.2f}"
+    with open(f"{exec_folder_path}/metrics.txt", "w") as f:
+        for result in results:
+            output = output_template.format(*result)
+            print(output.strip())
+            f.write(output)
+    
+        # Calculate and print averages
+        avg_depth, avg_cost, avg_explored, avg_frontier = calculate_averages(results)
+        avg_output = avg_template.format(algorithm, avg_depth, avg_cost, avg_explored, avg_frontier)
+        print(avg_output)
+        f.write(avg_output)
+            
     return results
 
 def print_node(node):
@@ -127,56 +202,6 @@ def print_node(node):
     state = node.state
     
     return depth, path_cost, operator, state
-
-def output_trace(folder_path, map_file, final_node, explored, frontier):
-    file_path = os.path.join(folder_path, f"{map_file.split('.')[0]}_trace.txt")
-    solution = final_node.path()
-    
-    with open(file_path, "w") as f:
-        depth, path_cost, operator, state = print_node(solution[0])
-
-        if hasattr(solution[0], 'h'):
-            heuristic = solution[0].h
-            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
-        else:
-            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {state})\n")
-
-        for i, node in enumerate(solution[1:], start=1):
-            # Get details of the current node
-            depth, path_cost, operator, state = print_node(node)
-
-            f.write(f"Operator {i}: {operator}\n")
-            
-            # Output format based on the presence of heuristic
-            if hasattr(node, 'h'):
-                heuristic = node.h
-                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
-            else:
-                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {state})\n")
-
-        f.write(f"Total number of items in explored list: {len(explored)}\n")
-        f.write(f"Total number of items in frontier: {len(frontier)}\n")
-    
-    print(f"Output saved to {file_path}")
-
-def calculate_averages(results):
-    if not results:
-        return 0, 0, 0, 0
-    
-    total_depth = total_cost = total_explored = total_frontier = 0
-    for _, depth, cost, explored_count, frontier_count in results:
-        total_depth += depth
-        total_cost += cost
-        total_explored += explored_count
-        total_frontier += frontier_count
-    
-    count = len(results)
-    avg_depth = total_depth / count
-    avg_cost = total_cost / count
-    avg_explored = total_explored / count
-    avg_frontier = total_frontier / count
-    
-    return avg_depth, avg_cost, avg_explored, avg_frontier
 
 def menu(stdscr, options, title):
     curses.curs_set(0)
@@ -247,14 +272,6 @@ if __name__ == '__main__':
                 results = execute_algorithm(map_size, algorithm, heuristic)
             else:
                 results = execute_algorithm(map_size, algorithm)
-            
-            # Output statistics for all maps
-            for map_file, depth, cost, explored_count, frontier_count in results:
-                print(f"Map: {map_file} | Depth: {depth} | Cost: {cost} | Explored nodes: {explored_count} | Final frontier: {frontier_count}")
-
-            # Calculate and print averages
-            avg_depth, avg_cost, avg_explored, avg_frontier = calculate_averages(results)
-            print(f"\nAverages for all maps using {algorithm} search: | Depth: {avg_depth:.2f} | Cost: {avg_cost:.2f} | Explored nodes: {avg_explored:.2f} | Final frontier: {avg_frontier:.2f}")
-
+        
         except ValueError as e:
             print(f"Error: {e}")

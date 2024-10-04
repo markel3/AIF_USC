@@ -51,7 +51,7 @@ class Map:
 
         plt.show()
     
-    def draw_solution(self, solution):
+    def draw_solution(self, solution, path = None):
         weights_array = np.array(self.weights)
         plt.imshow(weights_array, cmap="Blues", origin="upper")
         for i in range(self.rows):
@@ -78,9 +78,17 @@ class Map:
         plt.arrow(position[1]+arrow_dx/2, position[0]+arrow_dy/2, arrow_dx, arrow_dy, head_width=0.1, head_length=0.1, fc='green', ec='green')
                 
         plt.axis('off')
-        plt.show()
+
+        if path:
+            plt.savefig(path)
+        else:
+            plt.show()
         
-def visualize_tree(parent_map, title, figsize=(18, 14), folder_path = None):
+        plt.close()
+            
+Node.solution = lambda self: [node.state for node in self.path()]
+        
+def visualize_tree(parent_map, title, figsize=(18, 14), path = None):
     G = nx.DiGraph()
 
     for child, parent in parent_map.items():
@@ -93,10 +101,12 @@ def visualize_tree(parent_map, title, figsize=(18, 14), folder_path = None):
     nx.draw(G, pos, with_labels=True, node_size=3000, node_color='lightblue', font_size=10, font_weight='bold', arrowsize=20)
     plt.title(title, fontsize=40)
 
-    if folder_path:
-        plt.savefig(folder_path)
+    if path:
+        plt.savefig(path)
     else:
         plt.show()
+    
+    plt.close()
 
 
 class RobotProblem(Problem):
@@ -126,7 +136,6 @@ class RobotProblem(Problem):
             return cost_so_far + 1
         else:
             return cost_so_far + self.weights[state2[0], state2[1]]
-
 
 def breadth_first_graph_search(problem):
     node = Node(problem.initial)
