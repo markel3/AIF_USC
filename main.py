@@ -3,6 +3,7 @@ import argparse
 import numpy as np
 from robot_search import *
 import re
+import curses
 
 def generate_random_map(map_size, filename, origin_dir = os.getcwd(), random_start_end_points = False):
     # Generate the path to the new map file
@@ -55,17 +56,15 @@ def parse_size(size_arg):
         raise ValueError("Size must be an integer or two integers separated by 'x'.")
 
 def execute_algorithm(map_size, algorithm, heuristic = None):
-    # Directories for maps and traces
+    # Directories for maps and execution results
     maps_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_info_{map_size[0]}x{map_size[1]}"
     if heuristic:
-        trace_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_trace_{map_size[0]}x{map_size[1]}/a_{heuristic}"
+        exec_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/execution_{map_size[0]}x{map_size[1]}/a_{heuristic}"
     else:
-        trace_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_trace_{map_size[0]}x{map_size[1]}/{algorithm}"
-    vis_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_vis_{map_size[0]}x{map_size[1]}"
+        exec_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/execution_{map_size[0]}x{map_size[1]}/{algorithm}"
     
-    # Ensure trace folder exists
-    os.makedirs(trace_folder_path, exist_ok=True)
-    os.makedirs(vis_folder_path, exist_ok=True)
+    # Ensure execution folder exists
+    os.makedirs(exec_folder_path, exist_ok=True)
 
     # List maps from the maps folder
     try:
@@ -114,9 +113,9 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
         results.append((map_file, depth, cost, len(explored), len(frontier)))
         
         # Save detailed trace to a .txt file for each map
-        output_trace(trace_folder_path, map_file, final_node, explored, frontier)
+        output_trace(exec_folder_path, map_file, final_node, explored, frontier)
 
-        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", folder_path = os.path.join(vis_folder_path, map_file.split('.')[0]))
+        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", folder_path = os.path.join(exec_folder_path, map_file.split('.')[0]))
     
     return results
 
@@ -179,6 +178,27 @@ def calculate_averages(results):
     
     return avg_depth, avg_cost, avg_explored, avg_frontier
 
+def menu(stdscr, options, title):
+    curses.curs_set(0)
+    current_row = 0
+
+    while True:
+        stdscr.clear()
+        stdscr.addstr(0, 0, title)
+        for idx, row in enumerate(options):
+            if idx == current_row:
+                stdscr.addstr(idx + 1, 0, row, curses.A_REVERSE)
+            else:
+                stdscr.addstr(idx + 1, 0, row)
+        key = stdscr.getch()
+
+        if key == curses.KEY_UP and current_row > 0:
+            current_row -= 1
+        elif key == curses.KEY_DOWN and current_row < len(options) - 1:
+            current_row += 1
+        elif key == curses.KEY_ENTER or key in [10, 13]:
+            return options[current_row]
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Random map generator and search algorithm executor.')
     parser.add_argument('-g', action='store_true', help='Generate random maps')
@@ -216,13 +236,14 @@ if __name__ == '__main__':
     elif args.s:
         try:
             map_size = parse_size(args.size)
-            algorithm = input("Choose the algorithm (breadth, depth, a*): ").lower()
-            
-            if algorithm not in ['breadth', 'depth', 'a*']:
-                raise ValueError("Invalid algorithm choice. Please select from breadth, depth, or a*.")
+            algorithm_options = ['breadth', 'depth', 'a*']
+            heuristic_options = ['h1 (Chebyshev)', 'h2 (Euclidean)']
+
+            algorithm = curses.wrapper(menu, algorithm_options, "Choose the algorithm:")
             
             if algorithm == 'a*':
-                heuristic = input("Choose the heuristic function (h1(Chebyshev), h2(Euclidean)): ").lower()
+                heuristic = curses.wrapper(menu, heuristic_options, "Choose the heuristic function:")
+                heuristic = heuristic.split()[0]  # Extract 'h1' or 'h2'
                 results = execute_algorithm(map_size, algorithm, heuristic)
             else:
                 results = execute_algorithm(map_size, algorithm)
