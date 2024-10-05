@@ -123,18 +123,20 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
     results = []
     
     for map_file in maps:
-        trace_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_trace.txt")
-        tree_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_tree.png")
-        solution_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_solution.png")
-        
         print(f"Processing map: {map_file}")
         map_data = Map(os.path.join(maps_folder_path, map_file))
         if heuristic == 'h1':
             robot_problem = RobotProblem_Chebyshev(map_data)
         elif heuristic == 'h2':
             robot_problem = RobotProblem_Euclidean(map_data)
+        elif heuristic == 'h3':
+            robot_problem = RobotProblem_Hardness(map_data)
         else:
             robot_problem = RobotProblem(map_data)
+            
+        trace_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_{algorithm}{heuristic or ''}_trace.txt")
+        tree_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_{algorithm}{heuristic or ''}_tree.html")
+        solution_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_{algorithm}{heuristic or ''}_solution.png")
         
         # Run the chosen algorithm
         result = None
@@ -168,7 +170,7 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
         print(f"Trace saved to {trace_file}")
 
         # Save the tree visualization for each map
-        visualize_tree(parent_map, f"{algorithm} {heuristic or ''}", path = tree_file)
+        visualize_tree(parent_map, f"{map_file.split('.')[0]}_{algorithm}{heuristic or ''}", path = tree_file)
         print(f"Tree visualization saved to {tree_file}")
         
         # Save the visualization of the solution path
@@ -188,7 +190,7 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
     
         # Calculate and print averages
         avg_depth, avg_cost, avg_explored, avg_frontier = calculate_averages(results)
-        avg_output = avg_template.format(algorithm, avg_depth, avg_cost, avg_explored, avg_frontier)
+        avg_output = avg_template.format(f"{algorithm}{heuristic or ''}", avg_depth, avg_cost, avg_explored, avg_frontier)
         print(avg_output)
         f.write(avg_output)
         
@@ -264,7 +266,7 @@ if __name__ == '__main__':
         try:
             map_size = parse_size(args.size)
             algorithm_options = ['breadth', 'depth', 'a*']
-            heuristic_options = ['h1 (Chebyshev)', 'h2 (Euclidean)']
+            heuristic_options = ['h1 (Chebyshev)', 'h2 (Euclidean)', 'h3 (Hardness)']
 
             algorithm = curses.wrapper(menu, algorithm_options, "Choose the algorithm:")
             

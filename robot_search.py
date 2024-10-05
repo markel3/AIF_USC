@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 import networkx as nx
+import plotly.graph_objects as go
 
 orientation_vectors = {
     0: (-1, 0),     # North
@@ -87,8 +88,8 @@ class Map:
         plt.close()
             
 Node.solution = lambda self: [node.state for node in self.path()]
-        
-def visualize_tree(parent_map, title, figsize=(18, 14), path = None):
+
+def visualize_tree(parent_map, title, path = None):
     G = nx.DiGraph()
 
     for child, parent in parent_map.items():
@@ -96,17 +97,84 @@ def visualize_tree(parent_map, title, figsize=(18, 14), path = None):
 
     pos = nx.drawing.nx_agraph.graphviz_layout(G, prog='dot')
 
-    plt.figure(figsize=figsize)
+    edge_x = []
+    edge_y = []
+    for edge in G.edges():
+        x0, y0 = pos[edge[0]]
+        x1, y1 = pos[edge[1]]
+        edge_x.append(x0)
+        edge_x.append(x1)
+        edge_x.append(None)
+        edge_y.append(y0)
+        edge_y.append(y1)
+        edge_y.append(None)
 
-    nx.draw(G, pos, with_labels=True, node_size=3000, node_color='lightblue', font_size=10, font_weight='bold', arrowsize=20)
-    plt.title(title, fontsize=40)
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line=dict(width=1, color='#888'),
+        hoverinfo='none',
+        mode='lines')
+
+    node_x = []
+    node_y = []
+    for node in G.nodes():
+        x, y = pos[node]
+        node_x.append(x)
+        node_y.append(y)
+
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers+text',
+        hoverinfo='text',
+        text=[str(node) for node in G.nodes()],
+        textposition="bottom center",
+        marker=dict(
+            showscale=False,
+            color='lightblue',
+            size=20,
+            line_width=2))
+
+    layout = go.Layout(
+        title=title,
+        titlefont_size=16,
+        showlegend=False,
+        hovermode='closest',
+        margin=dict(b=0, l=0, r=0, t=40),
+        annotations=[dict(
+            text = "",
+            showarrow=False,
+            xref="paper", yref="paper",
+            x=0.005, y=-0.002)],
+        xaxis=dict(showgrid=False, zeroline=False),
+        yaxis=dict(showgrid=False, zeroline=False)
+    )
+
+    fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
 
     if path:
-        plt.savefig(path)
+        fig.write_html(path)
     else:
-        plt.show()
+        fig.show()
+        
+# def visualize_tree(parent_map, title, figsize=(18, 14), path = None):
+#     G = nx.DiGraph()
+
+#     for child, parent in parent_map.items():
+#         G.add_edge(parent, child)
+
+#     pos = nx.drawing.nx_agraph.graphviz_layout(G, prog='dot')
+
+#     plt.figure(figsize=figsize)
+
+#     nx.draw(G, pos, with_labels=True, node_size=3000, node_color='lightblue', font_size=10, font_weight='bold', arrowsize=20)
+#     plt.title(title, fontsize=40)
+
+#     if path:
+#         plt.savefig(path)
+#     else:
+#         plt.show()
     
-    plt.close()
+#     plt.close()
 
 
 class RobotProblem(Problem):
@@ -210,8 +278,23 @@ def euclidean_scaled_distance(start, goal):
     
     return np.sqrt((x2 - x1)**2 + (y2 - y1)**2)*np.sqrt(2)/2
 
-class RobotProblem_Euclidean(RobotProblem):
+def surrounding_hardness(state, weights, goal):
+    if state[:2] == goal:
+        return 0
+    x, y = state[:2]
+    hardness = 0
+    total_neighbors = 0
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            if (i == 0 and j == 0):
+                continue
+            if 0 <= x+i < weights.shape[0] and 0 <= y+j < weights.shape[1]:
+                hardness += weights[x+i, y+j]
+                total_neighbors += 1
+    return (hardness/(total_neighbors*9))**2
 
+class RobotProblem_Euclidean(RobotProblem):
+    
     def __init__(self, map):
         RobotProblem.__init__(self, map)
         
@@ -225,3 +308,11 @@ class RobotProblem_Chebyshev(RobotProblem):
         
     def h(self, node):
         return chebyshev_distance(node.state[:2], self.goal[:2])
+    
+class RobotProblem_Hardness(RobotProblem):
+    
+        def __init__(self, map):
+            RobotProblem.__init__(self, map)
+            
+        def h(self, node):
+            return surrounding_hardness(node.state, self.weights, self.goal[:2])
