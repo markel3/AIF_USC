@@ -161,5 +161,4 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-
 maps_[0-9]x[0-9]/execution_[0-9]x[0-9]/

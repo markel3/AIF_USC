@@ -4,6 +4,7 @@ import numpy as np
 from robot_search import *
 import re
 import curses
+import sys
 
 def generate_random_map(map_size, filename, origin_dir = os.getcwd(), random_start_end_points = False):
     # Generate the path to the new map file
@@ -74,35 +75,96 @@ def calculate_averages(results):
     
     return avg_depth, avg_cost, avg_explored, avg_frontier
 
-def output_trace(final_node, explored, frontier, path):
+def output_trace(final_node, explored, frontier, path, to_file = True):
+    original_output = sys.stdout
+    if to_file:
+        sys.stdout = open(path, "w")
+        
     solution = final_node.path()
     
-    with open(path, "w") as f:
-        depth, path_cost, operator, state = print_node(solution[0])
+    depth, path_cost, operator, state = print_node(solution[0])
 
-        if hasattr(solution[0], 'h'):
-            heuristic = solution[0].h
-            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
-        else:
-            f.write(f"Node 0: ({depth}, {path_cost}, {operator}, {state})\n")
+    if hasattr(solution[0], 'h'):
+        heuristic = solution[0].h
+        print(f"Node 0: ({depth}, {path_cost}, {operator}, {heuristic}, {state})")
+    else:
+        print(f"Node 0: ({depth}, {path_cost}, {operator}, {state})")
 
-        for i, node in enumerate(solution[1:], start=1):
-            # Get details of the current node
-            depth, path_cost, operator, state = print_node(node)
+    for i, node in enumerate(solution[1:], start=1):
+        # Get details of the current node
+        depth, path_cost, operator, state = print_node(node)
 
-            f.write(f"Operator {i}: {operator}\n")
+        print(f"Operator {i}: {operator}")
             
-            # Output format based on the presence of heuristic
-            if hasattr(node, 'h'):
-                heuristic = node.h
-                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {heuristic}, {state})\n")
-            else:
-                f.write(f"Node {i}: ({depth}, {path_cost}, {operator}, {state})\n")
+        # Output format based on the presence of heuristic
+        if hasattr(node, 'h'):
+            heuristic = node.h
+            print(f"Node {i}: ({depth}, {path_cost}, {operator}, {heuristic}, {state})")
+        else:
+            print(f"Node {i}: ({depth}, {path_cost}, {operator}, {state})")
 
-        f.write(f"Total number of items in explored list: {len(explored)}\n")
-        f.write(f"Total number of items in frontier: {len(frontier)}\n")
+    print(f"Total number of items in explored list: {len(explored)}")
+    print(f"Total number of items in frontier: {len(frontier)}")
+    
+    sys.stdout = original_output
+        
+        
+def execute_algorithm(map_data, algorithm, heuristic = None):
+    # Create the robot problem based on the chosen heuristic
+    if heuristic == 'h1':
+        robot_problem = RobotProblem_Chebyshev(map_data)
+    elif heuristic == 'h2':
+        robot_problem = RobotProblem_Euclidean(map_data)
+    elif heuristic == 'h3':            
+        robot_problem = RobotProblem_Hardness(map_data)
+    else:
+        robot_problem = RobotProblem(map_data)
+            
+    # Run the chosen algorithm
+    result = None
+    if algorithm == 'breadth':
+        result = breadth_first_graph_search(robot_problem)
+    elif algorithm == 'depth':
+        result = depth_first_graph_search(robot_problem)
+    elif algorithm == 'a*':
+        result = astar_search(robot_problem)
 
-def execute_algorithm(map_size, algorithm, heuristic = None):
+    return result
+
+def execute_algorithm_for_single_map(map_path, algorithm, heuristic = None):
+    # Run the chosen algorithm
+    map_data = Map(map_path)
+    print(f"Processing map: {map_path}")
+    result = execute_algorithm(map_data, algorithm, heuristic)
+    
+    if result is None or isinstance(result, tuple) and len(result) == 0:
+        print(f"No solution found for {map_path}.")
+        return
+
+    # Unpack results
+    final_node, explored, frontier, parent_map = result
+    
+    # Calculate cost and depth directly from the final_node
+    if isinstance(final_node, Node):
+        cost = final_node.path_cost
+        depth = final_node.depth
+    else:
+        print(f"Unexpected result type for final_node in {map_path}.")
+        return
+    
+    # Print output for the single map
+    output_trace(final_node, explored, frontier, path = None, to_file = False)
+    print(f"Depth: {depth} | Cost: {cost} | Explored nodes: {len(explored)} | Final frontier: {len(frontier)}")
+    
+    # Show the search tree visualization
+    visualize_tree(parent_map, "Search tree")
+        
+    # Show the visualization of the solution path
+    solution = final_node.solution()
+    solution.insert(0, map_data.start_position)
+    map_data.draw_solution(solution)
+
+def execute_algorithm_for_many_maps(map_size, algorithm, heuristic = None):
     # Directories for maps and execution results
     maps_folder_path = f"./maps_{map_size[0]}x{map_size[1]}/maps_info_{map_size[0]}x{map_size[1]}"
     if heuristic:
@@ -123,29 +185,13 @@ def execute_algorithm(map_size, algorithm, heuristic = None):
     results = []
     
     for map_file in maps:
-        print(f"Processing map: {map_file}")
         map_data = Map(os.path.join(maps_folder_path, map_file))
-        if heuristic == 'h1':
-            robot_problem = RobotProblem_Chebyshev(map_data)
-        elif heuristic == 'h2':
-            robot_problem = RobotProblem_Euclidean(map_data)
-        elif heuristic == 'h3':
-            robot_problem = RobotProblem_Hardness(map_data)
-        else:
-            robot_problem = RobotProblem(map_data)
+        
+        result = execute_algorithm(map_data, algorithm, heuristic)
             
         trace_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_{algorithm}{heuristic or ''}_trace.txt")
         tree_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_{algorithm}{heuristic or ''}_tree.html")
         solution_file = os.path.join(exec_folder_path, f"{map_file.split('.')[0]}_{algorithm}{heuristic or ''}_solution.png")
-        
-        # Run the chosen algorithm
-        result = None
-        if algorithm == 'breadth':
-            result = breadth_first_graph_search(robot_problem)
-        elif algorithm == 'depth':
-            result = depth_first_graph_search(robot_problem)
-        elif algorithm == 'a*':
-            result = astar_search(robot_problem)
 
         # Check if a solution was found
         if result is None or isinstance(result, tuple) and len(result) == 0:
@@ -232,8 +278,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Random map generator and search algorithm executor.')
     parser.add_argument('-g', action='store_true', help='Generate random maps')
     parser.add_argument('-s', action='store_true', help='Execute algorithms on generated maps')
-    parser.add_argument('size', type=str, help='Size of the map (n or n x m)')
-    parser.add_argument('num_maps', type=int, nargs='?', default=1, help='Number of maps to generate (optional for -g only)')
+    parser.add_argument('-t', action='store_true', help='Run algorithm on a single map')
+    parser.add_argument('--size', type=str, help='Size of the map (n or n x m)')
+    parser.add_argument('--num_maps', type=int, default=1, help='Number of maps to generate (optional for -g only)')
+    parser.add_argument('--map_path', type=str, help='Path to the map file (optional for -t only)')
 
     args = parser.parse_args()
 
@@ -273,9 +321,31 @@ if __name__ == '__main__':
             if algorithm == 'a*':
                 heuristic = curses.wrapper(menu, heuristic_options, "Choose the heuristic function:")
                 heuristic = heuristic.split()[0]  # Extract 'h1' or 'h2'
-                results = execute_algorithm(map_size, algorithm, heuristic)
+                results = execute_algorithm_for_many_maps(map_size, algorithm, heuristic)
             else:
-                results = execute_algorithm(map_size, algorithm)
+                results = execute_algorithm_for_many_maps(map_size, algorithm)
+        
+        except ValueError as e:
+            print(f"Error: {e}")
+    
+    elif args.t:
+        try:
+            map_path = args.map_path
+            
+            if map_path is None:
+                raise ValueError("Path to the map file is required for -t.")
+            
+            algorithm_options = ['breadth', 'depth', 'a*']
+            heuristic_options = ['h1 (Chebyshev)', 'h2 (Euclidean)', 'h3 (Hardness)']
+
+            algorithm = curses.wrapper(menu, algorithm_options, "Choose the algorithm:")
+            
+            if algorithm == 'a*':
+                heuristic = curses.wrapper(menu, heuristic_options, "Choose the heuristic function:")
+                heuristic = heuristic.split()[0]
+                results = execute_algorithm_for_single_map(map_path, algorithm, heuristic)
+            else:
+                results = execute_algorithm_for_single_map(map_path, algorithm)
         
         except ValueError as e:
             print(f"Error: {e}")
