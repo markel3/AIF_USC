@@ -291,7 +291,7 @@ def surrounding_hardness(state, weights, goal):
             if 0 <= x+i < weights.shape[0] and 0 <= y+j < weights.shape[1]:
                 hardness += weights[x+i, y+j]
                 total_neighbors += 1
-    return (hardness/(total_neighbors*9))**2
+    return (hardness/(total_neighbors*9))
 
 class RobotProblem_Euclidean(RobotProblem):
     
