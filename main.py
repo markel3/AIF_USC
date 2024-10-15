@@ -113,9 +113,7 @@ def execute_algorithm(map_data, algorithm, heuristic = None):
     # Create the robot problem based on the chosen heuristic
     if heuristic == 'h1':
         robot_problem = RobotProblem_Chebyshev(map_data)
-    elif heuristic == 'h2':
-        robot_problem = RobotProblem_Euclidean(map_data)
-    elif heuristic == 'h3':            
+    elif heuristic == 'h2':            
         robot_problem = RobotProblem_Hardness(map_data)
     else:
         robot_problem = RobotProblem(map_data)
@@ -314,7 +312,7 @@ if __name__ == '__main__':
         try:
             map_size = parse_size(args.size)
             algorithm_options = ['breadth', 'depth', 'a*']
-            heuristic_options = ['h1 (Chebyshev)', 'h2 (Euclidean)', 'h3 (Hardness)']
+            heuristic_options = ['h1 (Chebyshev)', 'h2 (Hardness)']
 
             algorithm = curses.wrapper(menu, algorithm_options, "Choose the algorithm:")
             
@@ -336,7 +334,7 @@ if __name__ == '__main__':
                 raise ValueError("Path to the map file is required for -t.")
             
             algorithm_options = ['breadth', 'depth', 'a*']
-            heuristic_options = ['h1 (Chebyshev)', 'h2 (Euclidean)', 'h3 (Hardness)']
+            heuristic_options = ['h1 (Chebyshev)', 'h2 (Hardness)']
 
             algorithm = curses.wrapper(menu, algorithm_options, "Choose the algorithm:")
             

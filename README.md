@@ -57,14 +57,14 @@ To get a local copy up and running follow these simple example steps.
 
 This function allows you to create random maps for the robot search problem. To use it, type `-g` followed by two arguments:
 <ul>
-  <li><b>Map size:</b> Either a single positive integer for a square map or two positive integers separated by 'x' (e.g., <code>5x7</code>).</li>
-  <li><b>Number of maps:</b> A positive integer indicating how many maps to generate.</li>
+  <li><b>Map size:</b> Either a single positive integer for a square map or two positive integers separated by 'x' (e.g., <code>5x7</code>). Specified by <code>--size</code>.</li>
+  <li><b>Number of maps:</b> A positive integer indicating how many maps to generate. Specified by <code>--num_maps</code>.</li>
 </ul>
 
 #### Examples:
 <ul>
-  <li><code>python main.py -g 10 5</code> — Generates 5 square maps of size 10x10.</li>
-  <li><code>python main.py -g 5x7 3</code> — Generates 3 rectangular maps of size 5x7.</li>
+  <li><code>python main.py -g --size 10 --num_maps 5</code> — Generates 5 square maps of size 10x10.</li>
+  <li><code>python main.py -g --size 5x7 --num_maps 3</code> — Generates 3 rectangular maps of size 5x7.</li>
 </ul>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -73,14 +73,14 @@ This function allows you to create random maps for the robot search problem. To 
 
 <p>This function allows you to execute your preferred search algorithm for all maps of a specified size. To use it, type <code>-s</code> followed by one argument:</p>
 <ul>
-  <li><b>Map Size:</b> This can be a single positive integer for a square map or two positive integers separated by an 'x' (e.g., <code>5x7</code>).</li>
+  <li><b>Map Size:</b> This can be a single positive integer for a square map or two positive integers separated by an 'x' (e.g., <code>5x7</code>). Specified by <code>--size</code>.</li>
 </ul>
 <p>You will then be prompted to select one of the available search algorithms.</p>
 
 <h4>Examples:</h4>
 <ul>
-  <li><code>python main.py -s 5</code> — Executes the search for all square maps of size 5x5.</li>
-  <li><code>python main.py -s 5x7</code> — Executes the search for all rectangular maps of size 5x7.</li>
+  <li><code>python main.py --size 5</code> — Executes the search for all square maps of size 5x5.</li>
+  <li><code>python main.py --size 5x7</code> — Executes the search for all rectangular maps of size 5x7.</li>
 </ul>
 
 <p>The program will generate files that include the output trace, search tree visualization, and solution visualization for each map. Additionally, it computes the following metrics for each map:</p>
