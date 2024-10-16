@@ -57,8 +57,8 @@ To get a local copy up and running follow these simple example steps.
 
 This function allows you to create random maps for the robot search problem. To use it, type `-g` followed by two arguments:
 <ul>
-  <li><b>Map size:</b> Either a single positive integer for a square map or two positive integers separated by 'x' (e.g., <code>5x7</code>). Specified by <code>--size</code>.</li>
-  <li><b>Number of maps:</b> A positive integer indicating how many maps to generate. Specified by <code>--num_maps</code>.</li>
+  <li><b>Map Size:</b> Either a single positive integer for a square map or two positive integers separated by 'x' (e.g., <code>5x7</code>). Specified by <code>--size</code>.</li>
+  <li><b>Number of Maps:</b> A positive integer indicating how many maps to generate. Specified by <code>--num_maps</code>.</li>
 </ul>
 
 #### Examples:
@@ -79,8 +79,8 @@ This function allows you to create random maps for the robot search problem. To 
 
 <h4>Examples:</h4>
 <ul>
-  <li><code>python main.py --size 5</code> — Executes the search for all square maps of size 5x5.</li>
-  <li><code>python main.py --size 5x7</code> — Executes the search for all rectangular maps of size 5x7.</li>
+  <li><code>python main.py -s --size 5</code> — Executes the search for all square maps of size 5x5.</li>
+  <li><code>python main.py -s --size 5x7</code> — Executes the search for all rectangular maps of size 5x7.</li>
 </ul>
 
 <p>The program will generate files that include the output trace, search tree visualization, and solution visualization for each map. Additionally, it computes the following metrics for each map:</p>
@@ -98,6 +98,17 @@ This function allows you to create random maps for the robot search problem. To 
 
 <h3 id="execute-one-search"> 3. Execute one search </h3>
 
+<p>This function allows you to execute your chosen search algorithm on a single specific map. To use it, type <code>-t</code> followed by one argument:</p>
+<ul>
+  <li><b>Map Path:</b> The path to the map file you want to use. This can be an absolute or relative path (e.g., <code>/path/to/your/mapfile.txt</code>). Specified by <code>--map_path</code>.</li>
+</ul>
+
+<h4>Example:</h4>
+<ul>
+  <li><code>python main.py -t --map_path /path/to/your/mapfile.txt</code> — Executes the search on <code>mapfile.txt</code>.</li>
+</ul>
+
+<p>The program will display the results, including the depth, cost, number of explored nodes, and the final frontier. It will also visualize the search tree and the solution path on the map.</p>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
