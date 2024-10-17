@@ -66,7 +66,7 @@ To solve the problem, the following search algorithms were implemented:
 <!-- INSTALLATION -->
 ## Installation
 
-Once you have cloned the repository, you can install the required packages by running the following command:
+Once you have cloned the repository, you can create a new conda environment of python 3.10 with all the required packages by running the following command:
 
 ```sh
 conda env create -f environment.yml
