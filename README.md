@@ -1,12 +1,8 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
+
+[![Contributors][contributors-shield]][contributors-url]
+[![MIT License][license-shield]][license-url]
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -33,7 +29,21 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`.
+This project was developed as part of the first assignment of the Artificial Intelligence Fundamentals course at the University of Santiago de Compostela. The goal was to implement and compare different search algorithms for a robot search problem. 
+
+In this problem, a robot must find a path from its initial position to a goal position in a grid-like, in which cell represents a rock with an associated hardness value, from 1 to 9. The restrictions are as follows:
+<ul>
+    <li> <b> Robot Orientation: </b> It must consider one of the eight possible orientations (North, Northeast, East, Southeast, South, Southwest, West, Northwest). </li>
+    <li> <b> Allowed Actions:: </b> At each position, the robot can:
+    <ul>
+        <li> Move (drill) in the direction of its current orientation. </li>
+        <li>Rotate 45 degrees clockwise or counterclockwise.</li>
+    </ul>
+    </li>
+</ul>
+Each 45-degree rotation has an associated cost of one unit, and the cost of moving forward depends on the hardness of the rock at the target position.
+
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -42,8 +52,23 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <!-- INSTALLATION -->
 ## Installation
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Once you have cloned the repository, you can install the required packages by running the following command:
+
+```sh
+conda env create -f environment.yml
+```
+
+This will create a new conda environment named `aif_P1` with all the necessary packages. To activate the environment, run:
+
+```sh
+conda activate aif_P1
+```
+
+After activating the environment, you can run the program. To deactivate the environment, run:
+
+```sh
+conda deactivate
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -123,7 +148,7 @@ This function allows you to create random maps for the robot search problem. To 
 [issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
 [issues-url]: https://github.com/github_username/repo_name/issues
 [license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/github_username/repo_name/blob/master/LICENSE.txt
+[license-url]: https://github.com/markel3/AIF_USC/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/screenshot.png

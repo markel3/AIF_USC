@@ -124,7 +124,7 @@ def execute_algorithm(map_data, algorithm, heuristic = None):
         result = breadth_first_graph_search(robot_problem)
     elif algorithm == 'depth':
         result = depth_first_graph_search(robot_problem)
-    elif algorithm == 'a*':
+    elif algorithm == 'a_star':
         result = astar_search(robot_problem)
 
     return result
@@ -311,12 +311,12 @@ if __name__ == '__main__':
     elif args.s:
         try:
             map_size = parse_size(args.size)
-            algorithm_options = ['breadth', 'depth', 'a*']
+            algorithm_options = ['breadth', 'depth', 'a_star']
             heuristic_options = ['h1 (Chebyshev)', 'h2 (Hardness)']
 
             algorithm = curses.wrapper(menu, algorithm_options, "Choose the algorithm:")
             
-            if algorithm == 'a*':
+            if algorithm == 'a_star':
                 heuristic = curses.wrapper(menu, heuristic_options, "Choose the heuristic function:")
                 heuristic = heuristic.split()[0]  # Extract 'h1' or 'h2'
                 results = execute_algorithm_for_many_maps(map_size, algorithm, heuristic)
@@ -333,12 +333,12 @@ if __name__ == '__main__':
             if map_path is None:
                 raise ValueError("Path to the map file is required for -t.")
             
-            algorithm_options = ['breadth', 'depth', 'a*']
+            algorithm_options = ['breadth', 'depth', 'a_star']
             heuristic_options = ['h1 (Chebyshev)', 'h2 (Hardness)']
 
             algorithm = curses.wrapper(menu, algorithm_options, "Choose the algorithm:")
             
-            if algorithm == 'a*':
+            if algorithm == 'a_star':
                 heuristic = curses.wrapper(menu, heuristic_options, "Choose the heuristic function:")
                 heuristic = heuristic.split()[0]
                 results = execute_algorithm_for_single_map(map_path, algorithm, heuristic)
