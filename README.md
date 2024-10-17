@@ -31,6 +31,8 @@
 
 This project was developed as part of the first assignment of the Artificial Intelligence Fundamentals course at the University of Santiago de Compostela. The goal was to implement and compare different search algorithms for a robot search problem. 
 
+This project based on the code from the [aima](https://github.com/aimacode/aima-python) repository. In particular, the script called `search.py` was used as a base to implement the search algorithms.
+
 In this problem, a robot must find a path from its initial position to a goal position in a grid-like map, in which each cell represents a rock with an associated hardness value, from 1 to 9. The restrictions are as follows:
 <ul>
     <li> <b> Robot Orientation: </b> It must consider one of the eight possible orientations (North, Northeast, East, Southeast, South, Southwest, West, Northwest). </li>
