@@ -31,7 +31,7 @@
 
 This project was developed as part of the first assignment of the Artificial Intelligence Fundamentals course at the University of Santiago de Compostela. The goal was to implement and compare different search algorithms for a robot search problem. 
 
-In this problem, a robot must find a path from its initial position to a goal position in a grid-like, in which cell represents a rock with an associated hardness value, from 1 to 9. The restrictions are as follows:
+In this problem, a robot must find a path from its initial position to a goal position in a grid-like map, in which each cell represents a rock with an associated hardness value, from 1 to 9. The restrictions are as follows:
 <ul>
     <li> <b> Robot Orientation: </b> It must consider one of the eight possible orientations (North, Northeast, East, Southeast, South, Southwest, West, Northwest). </li>
     <li> <b> Allowed Actions:: </b> At each position, the robot can:
@@ -42,6 +42,18 @@ In this problem, a robot must find a path from its initial position to a goal po
     </li>
 </ul>
 Each 45-degree rotation has an associated cost of one unit, and the cost of moving forward depends on the hardness of the rock at the target position.
+
+To solve the problem, the following search algorithms were implemented:
+<ul>
+    <li> <b> Breadth-First Search (BFS) </b> </li>
+    <li> <b> Depth-First Search (DFS) </b> </li>
+    <li> <b> A* with two different heuristics: </b>
+    <ul>
+        <li> <b> Chebyshev Distance: </b> The maximum of the absolute differences between the x and y coordinates of the current position and the goal position. </li>
+        <li> <b> Surrounding hardness: </b> A normalized mean of the hardness values of the adjacent cells to the studied position. </li>
+    </ul>
+    </li>
+</ul>
 
 
 
@@ -139,32 +151,7 @@ This function allows you to create random maps for the robot search problem. To 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/github_username/repo_name.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/markel3/AIF_USC.svg?style=for-the-badge
 [contributors-url]: https://github.com/markel3/AIF_USC/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/github_username/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/github_username/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/github_username/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/github_username/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/github_username/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/github_username/repo_name.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/markel3/AIF_USC.svg?style=for-the-badge
 [license-url]: https://github.com/markel3/AIF_USC/blob/main/LICENSE
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: images/screenshot.png
-[Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Next-url]: https://nextjs.org/
-[React.js]: https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[React-url]: https://reactjs.org/
-[Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
-[Vue-url]: https://vuejs.org/
-[Angular.io]: https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white
-[Angular-url]: https://angular.io/
-[Svelte.dev]: https://img.shields.io/badge/Svelte-4A4A55?style=for-the-badge&logo=svelte&logoColor=FF3E00
-[Svelte-url]: https://svelte.dev/
-[Laravel.com]: https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white
-[Laravel-url]: https://laravel.com
-[Bootstrap.com]: https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white
-[Bootstrap-url]: https://getbootstrap.com
-[JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
-[JQuery-url]: https://jquery.com 
