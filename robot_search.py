@@ -155,26 +155,6 @@ def visualize_tree(parent_map, title, path = None):
         fig.write_html(path)
     else:
         fig.show()
-        
-# def visualize_tree(parent_map, title, figsize=(18, 14), path = None):
-#     G = nx.DiGraph()
-
-#     for child, parent in parent_map.items():
-#         G.add_edge(parent, child)
-
-#     pos = nx.drawing.nx_agraph.graphviz_layout(G, prog='dot')
-
-#     plt.figure(figsize=figsize)
-
-#     nx.draw(G, pos, with_labels=True, node_size=3000, node_color='lightblue', font_size=10, font_weight='bold', arrowsize=20)
-#     plt.title(title, fontsize=40)
-
-#     if path:
-#         plt.savefig(path)
-#     else:
-#         plt.show()
-    
-#     plt.close()
 
 
 class RobotProblem(Problem):
